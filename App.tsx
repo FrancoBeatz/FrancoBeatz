@@ -7,13 +7,18 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AmbientSound from './components/AmbientSound';
+import { Beat } from './types';
 
 const App: React.FC = () => {
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(false);
   const [isBeatPlaying, setIsBeatPlaying] = useState(false);
+  const [cart, setCart] = useState<Beat[]>([]);
+  const [ratings, setRatings] = useState<Record<string, number>>(() => {
+    const saved = localStorage.getItem('franco_ratings');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   useEffect(() => {
-    // Smooth scroll for anchor links
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
@@ -33,7 +38,6 @@ const App: React.FC = () => {
 
     document.addEventListener('click', handleAnchorClick);
 
-    // Intersection Observer for fade-in animations
     const observerOptions = {
       threshold: 0.1,
       rootMargin: "0px 0px -50px 0px"
@@ -67,15 +71,45 @@ const App: React.FC = () => {
     setIsBeatPlaying(playing);
   }, []);
 
+  const handleAddToCart = (beat: Beat) => {
+    if (!cart.find(item => item.id === beat.id)) {
+      setCart(prev => [...prev, beat]);
+    }
+  };
+
+  const handleRemoveFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleClearCart = () => {
+    setCart([]);
+  };
+
+  const handleRateBeat = (id: string, rating: number) => {
+    const newRatings = { ...ratings, [id]: rating };
+    setRatings(newRatings);
+    localStorage.setItem('franco_ratings', JSON.stringify(newRatings));
+  };
+
   return (
     <div className="min-h-screen selection:bg-green-500 selection:text-white">
       <Navbar 
         isAmbientPlaying={isAmbientPlaying} 
-        onToggleAmbient={handleToggleAmbient} 
+        onToggleAmbient={handleToggleAmbient}
+        cart={cart}
+        onRemoveFromCart={handleRemoveFromCart}
+        onClearCart={handleClearCart}
       />
       <main>
         <Hero />
-        <BeatStore onBeatStateChange={handleBeatStateChange} />
+        <BeatStore 
+          onBeatStateChange={handleBeatStateChange} 
+          cart={cart}
+          onAddToCart={handleAddToCart}
+          onClearCart={handleClearCart}
+          ratings={ratings}
+          onRate={handleRateBeat}
+        />
         <About />
         <Contact />
       </main>
@@ -86,7 +120,6 @@ const App: React.FC = () => {
         isBeatPlaying={isBeatPlaying} 
       />
 
-      {/* Decorative scanline globally */}
       <div className="fixed inset-0 pointer-events-none z-[60] opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,128,0.06))] bg-[length:100%_2px,3px_100%]"></div>
     </div>
   );
