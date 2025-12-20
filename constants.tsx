@@ -3,8 +3,8 @@ import { Beat, NavItem } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'COMMAND CENTER', href: '#home' },
-  { label: 'BEAT ARSENAL', href: '#beats' },
-  { label: 'THE PRODUCER', href: '#about' },
+  { label: 'AUDIO ARSENAL', href: '#beats' },
+  { label: 'INTEL', href: '#about' },
   { label: 'COMMS', href: '#contact' },
 ];
 
@@ -16,9 +16,9 @@ export const BEATS: Beat[] = [
     key: 'F# Min',
     price: 29.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    imageUrl: 'https://picsum.photos/seed/tiberium/800/600',
+    imageUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=800',
     tags: ['Trap', 'Aggressive', 'Industrial'],
-    description: 'A heavy-hitting trap beat with menacing synths and distorted 808s.'
+    description: 'Heavy-hitting munitions for the front lines. Distorted 808s and aggressive lead synths.'
   },
   {
     id: '2',
@@ -27,9 +27,9 @@ export const BEATS: Beat[] = [
     key: 'C Maj',
     price: 34.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    imageUrl: 'https://picsum.photos/seed/gdi/800/600',
+    imageUrl: 'https://images.unsplash.com/photo-1514525253344-f814d871d111?auto=format&fit=crop&q=80&w=800',
     tags: ['Hip-Hop', 'Melodic', 'Success'],
-    description: 'Triumphant horns and crisp percussion for that winner mentality.'
+    description: 'Triumphant brass sections and precision-engineered percussion. Command respect.'
   },
   {
     id: '3',
@@ -38,9 +38,9 @@ export const BEATS: Beat[] = [
     key: 'D# Min',
     price: 24.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    imageUrl: 'https://picsum.photos/seed/nod/800/600',
+    imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
     tags: ['Dark', 'Phonk', 'Aggressive'],
-    description: 'Fast-paced, dark energetic vibes for late-night sessions.'
+    description: 'Cloaked in darkness. Fast high-hats and eerie atmospheric layers for late-night ops.'
   },
   {
     id: '4',
@@ -49,9 +49,9 @@ export const BEATS: Beat[] = [
     key: 'A Min',
     price: 49.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    imageUrl: 'https://picsum.photos/seed/ion/800/600',
+    imageUrl: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=800',
     tags: ['Trap', 'Space', 'Future'],
-    description: 'Atmospheric textures combined with modern trap bounce.'
+    description: 'Orbital strike of bass. Atmospheric textures combined with modern bounce.'
   },
   {
     id: '5',
@@ -60,9 +60,9 @@ export const BEATS: Beat[] = [
     key: 'E Min',
     price: 29.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
-    imageUrl: 'https://picsum.photos/seed/drill/800/600',
+    imageUrl: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&q=80&w=800',
     tags: ['Drill', 'Gritty', 'UK'],
-    description: 'Sliding 808s and technical high-hat patterns.'
+    description: 'Technical high-hat patterns and sliding 808s engineered for the concrete jungle.'
   },
   {
     id: '6',
@@ -71,8 +71,8 @@ export const BEATS: Beat[] = [
     key: 'G Min',
     price: 39.99,
     previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
-    imageUrl: 'https://picsum.photos/seed/commander/800/600',
-    tags: ['Old School', 'Soulful', 'Smooth'],
-    description: 'Classic hip-hop groove with a soulful sample flip.'
+    imageUrl: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&q=80&w=800',
+    tags: ['Soulful', 'Smooth', 'Vinyl'],
+    description: 'Classic soulful groove with a tactical edge. Strategic sample flip for high-tier lyricism.'
   }
 ];
