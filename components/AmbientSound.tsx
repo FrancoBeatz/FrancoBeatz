@@ -8,37 +8,66 @@ interface AmbientSoundProps {
 
 const AmbientSound: React.FC<AmbientSoundProps> = ({ isPlaying, isBeatPlaying }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const intervalRef = useRef<number | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.3; // Low background volume
+      audioRef.current.volume = 0; // Start muted
       audioRef.current.loop = true;
     }
+    return () => {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+    };
   }, []);
 
   useEffect(() => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    if (isPlaying && !isBeatPlaying) {
-      audioRef.current.play().catch(e => console.log("Autoplay prevented:", e));
-      // Fade in effect
-      const targetVolume = 0.3;
-      audioRef.current.volume = 0;
-      const fadeIn = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume < targetVolume) {
-          audioRef.current.volume = Math.min(targetVolume, audioRef.current.volume + 0.05);
-        } else {
-          clearInterval(fadeIn);
-        }
-      }, 100);
+    // Clear any existing transition
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    const targetActive = isPlaying && !isBeatPlaying;
+
+    if (targetActive) {
+      // Initiate play and store promise
+      playPromiseRef.current = audio.play();
+      
+      playPromiseRef.current.then(() => {
+        const targetVolume = 0.3;
+        intervalRef.current = window.setInterval(() => {
+          if (audio.volume < targetVolume) {
+            audio.volume = Math.min(targetVolume, audio.volume + 0.05);
+          } else {
+            if (intervalRef.current) window.clearInterval(intervalRef.current);
+          }
+        }, 100);
+      }).catch(e => {
+        console.warn("Ambient playback blocked or interrupted:", e);
+      });
     } else {
-      // Fade out effect
-      const fadeOut = setInterval(() => {
-        if (audioRef.current && audioRef.current.volume > 0.01) {
-          audioRef.current.volume = Math.max(0, audioRef.current.volume - 0.05);
+      // Fade out
+      intervalRef.current = window.setInterval(() => {
+        if (audio.volume > 0.01) {
+          audio.volume = Math.max(0, audio.volume - 0.05);
         } else {
-          if (audioRef.current) audioRef.current.pause();
-          clearInterval(fadeOut);
+          audio.volume = 0;
+          if (intervalRef.current) window.clearInterval(intervalRef.current);
+          
+          // Only pause if the play promise has resolved or failed
+          if (playPromiseRef.current) {
+            playPromiseRef.current.then(() => {
+              audio.pause();
+            }).catch(() => {
+              audio.pause();
+            });
+          } else {
+            audio.pause();
+          }
         }
       }, 100);
     }
@@ -47,7 +76,7 @@ const AmbientSound: React.FC<AmbientSoundProps> = ({ isPlaying, isBeatPlaying })
   return (
     <audio 
       ref={audioRef} 
-      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" // Ambient atmospheric track
+      src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" 
       preload="auto"
     />
   );

@@ -34,6 +34,7 @@ const BeatStore: React.FC<BeatStoreProps> = ({
   const [volume, setVolume] = useState(0.7);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
 
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
@@ -42,14 +43,41 @@ const BeatStore: React.FC<BeatStoreProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const safePlay = () => {
+    if (audioRef.current) {
+      playPromiseRef.current = audioRef.current.play();
+      playPromiseRef.current.catch(error => {
+        console.warn("Beat playback interrupted or blocked:", error);
+      });
+    }
+  };
+
+  const safePause = () => {
+    if (audioRef.current) {
+      if (playPromiseRef.current) {
+        playPromiseRef.current.then(() => {
+          audioRef.current?.pause();
+        }).catch(() => {
+          audioRef.current?.pause();
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  };
+
   const handlePlay = (beat: Beat) => {
     if (currentBeat?.id === beat.id) {
-      if (isPlaying) { audioRef.current?.pause(); } else { audioRef.current?.play(); }
+      if (isPlaying) { 
+        safePause(); 
+      } else { 
+        safePlay(); 
+      }
     } else {
       setCurrentBeat(beat);
       if (audioRef.current) {
         audioRef.current.src = beat.previewUrl;
-        audioRef.current.play();
+        safePlay();
       }
     }
   };
@@ -110,7 +138,6 @@ const BeatStore: React.FC<BeatStoreProps> = ({
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row gap-12">
           
-          {/* Advanced Tech Sidebar HUD */}
           <aside className="lg:w-80 space-y-8">
             <div className="military-border bg-slate-900/50 p-6 space-y-6 backdrop-blur-sm">
               <div className="font-mono text-[10px] text-[#ff5500] tracking-[0.4em] uppercase">Tactical Parameters</div>
@@ -172,7 +199,6 @@ const BeatStore: React.FC<BeatStoreProps> = ({
             )}
           </aside>
 
-          {/* Beat Grid */}
           <div className="flex-1">
             {filteredBeats.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
@@ -206,7 +232,6 @@ const BeatStore: React.FC<BeatStoreProps> = ({
 
       <audio ref={audioRef} preload="metadata" />
 
-      {/* Confirmation Modals */}
       {isClearConfirmOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-xl">
           <div className="absolute inset-0 bg-slate-950/80" onClick={() => setIsClearConfirmOpen(false)}></div>
@@ -221,7 +246,6 @@ const BeatStore: React.FC<BeatStoreProps> = ({
         </div>
       )}
 
-      {/* Modern SoundCloud Desktop Player HUD */}
       {currentBeat && (
         <div className="fixed bottom-0 left-0 w-full z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-[#ff5500]/30 py-6 transform animate-slide-up">
           <div className="container mx-auto px-6 flex items-center gap-12">
@@ -272,6 +296,22 @@ const BeatStore: React.FC<BeatStoreProps> = ({
               >
                 SECURE LICENSE
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isConfirmOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-xl">
+          <div className="absolute inset-0 bg-slate-950/80" onClick={() => setIsConfirmOpen(false)}></div>
+          <div className="relative bg-slate-900 border border-green-500/40 p-10 max-w-lg w-full military-border shadow-[0_0_100px_rgba(34,197,94,0.2)]">
+            <h3 className="font-syncopate text-2xl text-white mb-4 uppercase tracking-tighter">AUTHORIZE ACQUISITION</h3>
+            <p className="font-rajdhani text-slate-400 mb-10 leading-relaxed text-lg">
+              Confirm immediate deployment of <span className="text-[#ff5500] font-bold">{beatToBuy?.title}</span> license files?
+            </p>
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <button onClick={() => { setIsConfirmOpen(false); alert(`Deploying ${beatToBuy?.title} protocol...`); }} className="flex-1 bg-green-600 hover:bg-green-500 text-white font-syncopate text-[11px] py-4 btn-military uppercase tracking-[0.2em] font-bold">CONFIRM DEPLOY</button>
+              <button onClick={() => setIsConfirmOpen(false)} className="flex-1 border border-slate-700 hover:border-slate-500 text-slate-400 font-syncopate text-[11px] py-4 uppercase tracking-[0.2em]">ABORT MISSION</button>
             </div>
           </div>
         </div>
